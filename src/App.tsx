@@ -360,12 +360,12 @@ const StudentView = ({ onBack }: { onBack: () => void }) => {
   ];
 
   return (
-    <div className="h-screen w-full relative bg-gray-100">
+    <div className="fixed inset-0 w-full bg-gray-100" style={{ height: '100dvh' }}>
       <div className="absolute inset-0"><Map /></div>
-      <button onClick={onBack} className="absolute top-4 left-4 z-[1000] p-3 bg-white rounded-full shadow-lg hover:scale-105 transition-transform">
+      <button onClick={onBack} className="absolute z-[1000] p-3 bg-white rounded-full shadow-lg hover:scale-105 transition-transform" style={{ top: 'max(16px, env(safe-area-inset-top, 16px))', left: '16px' }}>
           <span className="material-symbols-outlined text-gray-800">arrow_back</span>
       </button>
-      <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.2)] p-6 z-[1000]">
+      <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.2)] p-6 z-[1000]" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom, 24px))' }}>
         <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-5"></div>
         {status === 'idle' && (
             <div className="space-y-4">
@@ -438,8 +438,8 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
   const handleFinish = () => { setAccepted(false); setIsOnline(false); };
 
   return (
-    <div className="h-screen w-full flex flex-col relative bg-gray-900">
-      <div className="absolute top-0 w-full p-4 z-[1000] flex justify-between items-start pointer-events-none">
+    <div className="fixed inset-0 w-full flex flex-col bg-gray-900" style={{ height: '100dvh' }}>
+      <div className="absolute w-full z-[1000] flex justify-between items-start pointer-events-none" style={{ top: 'max(16px, env(safe-area-inset-top, 16px))', left: 0, right: 0, padding: '0 16px' }}>
         <button onClick={onBack} className="p-3 bg-white rounded-full shadow-lg pointer-events-auto hover:scale-105 transition-transform">
             <span className="material-symbols-outlined text-gray-800">arrow_back</span>
         </button>
@@ -450,7 +450,7 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
       </div>
       <div className={`flex-1 relative transition-all duration-300 ${incomingRequest ? 'opacity-60' : 'opacity-90'}`}><Map /></div>
       {!incomingRequest && !accepted && (
-          <div className="absolute bottom-10 left-0 w-full flex flex-col items-center z-[1000] space-y-4">
+          <div className="absolute left-0 w-full flex flex-col items-center z-[1000] space-y-4" style={{ bottom: 'max(40px, calc(env(safe-area-inset-bottom, 40px) + 20px))' }}>
             {isOnline && <span className="bg-black/80 backdrop-blur text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg">🔍 Procurando alunos...</span>}
             <button onClick={() => setIsOnline(!isOnline)} className={`w-28 h-28 rounded-full border-4 border-white shadow-2xl flex items-center justify-center text-2xl font-bold transition-all hover:scale-105 ${isOnline ? 'bg-red-500' : 'bg-gradient-to-br from-blue-500 to-blue-700'} text-white`}>
                 {isOnline ? 'PARAR' : 'GO'}
@@ -458,7 +458,7 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
           </div>
       )}
       {accepted && (
-        <div className="absolute bottom-0 w-full bg-gradient-to-t from-gray-900 via-gray-900 to-transparent p-6 z-[2000]">
+        <div className="absolute bottom-0 w-full bg-gradient-to-t from-gray-900 via-gray-900 to-transparent p-6 z-[2000]" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom, 24px))' }}>
             <div className="bg-green-600 rounded-2xl p-6 text-white shadow-2xl">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-4">
@@ -472,7 +472,7 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
         </div>
       )}
       {incomingRequest && (
-        <div className="absolute bottom-0 w-full bg-gradient-to-t from-gray-900 via-gray-900 to-transparent p-6 z-[2000]">
+        <div className="absolute bottom-0 w-full bg-gradient-to-t from-gray-900 via-gray-900 to-transparent p-6 z-[2000]" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom, 24px))' }}>
           <div className="bg-gray-800 rounded-3xl p-6 border-2 border-green-500 shadow-2xl shadow-green-500/20">
             <div className="flex justify-between items-start mb-6">
                 <div><h2 className="text-4xl font-bold text-green-400">{incomingRequest.earnings}</h2><span className="text-gray-400 text-sm">Aula de 50 min</span></div>
@@ -505,7 +505,7 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white overflow-x-hidden overflow-y-auto" style={{ minHeight: '100dvh' }}>
         <Header onOpenApp={(mode) => setView(mode)} />
         <main>
           <HeroSection onOpenApp={(mode) => setView(mode)} />
