@@ -1,5 +1,7 @@
 import React, { useState, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import Map from './components/Map';
+import StudentOnboarding from './components/onboarding/StudentOnboarding';
+import InstructorOnboarding from './components/onboarding/InstructorOnboarding';
 
 // Error Boundary
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean, error: Error | null }> {
@@ -498,20 +500,28 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
 // ============================================
 
 const App = () => {
-  const [view, setView] = useState<'landing' | 'student' | 'instructor'>('landing');
+  const [view, setView] = useState<'landing' | 'student-onboarding' | 'student' | 'instructor-onboarding' | 'instructor'>('landing');
 
+  const handleOpenApp = (mode: 'student' | 'instructor') => {
+    if (mode === 'student') setView('student-onboarding');
+    if (mode === 'instructor') setView('instructor-onboarding');
+  };
+
+  if (view === 'student-onboarding') return <ErrorBoundary><StudentOnboarding onComplete={() => setView('student')} onBack={() => setView('landing')} /></ErrorBoundary>;
   if (view === 'student') return <ErrorBoundary><StudentView onBack={() => setView('landing')} /></ErrorBoundary>;
+  
+  if (view === 'instructor-onboarding') return <ErrorBoundary><InstructorOnboarding onComplete={() => setView('instructor')} onBack={() => setView('landing')} /></ErrorBoundary>;
   if (view === 'instructor') return <ErrorBoundary><InstructorView onBack={() => setView('landing')} /></ErrorBoundary>;
 
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-white overflow-x-hidden overflow-y-auto" style={{ minHeight: '100dvh' }}>
-        <Header onOpenApp={(mode) => setView(mode)} />
+        <Header onOpenApp={handleOpenApp} />
         <main>
-          <HeroSection onOpenApp={(mode) => setView(mode)} />
+          <HeroSection onOpenApp={handleOpenApp} />
           <HowItWorksSection />
-          <ForStudentsSection onOpenApp={() => setView('student')} />
-          <ForInstructorsSection onOpenApp={() => setView('instructor')} />
+          <ForStudentsSection onOpenApp={() => handleOpenApp('student')} />
+          <ForInstructorsSection onOpenApp={() => handleOpenApp('instructor')} />
           <FAQSection />
         </main>
         <Footer />
