@@ -484,6 +484,13 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
       setDestination(null);
   };
 
+  const openNavigation = () => {
+    if (!destination) return;
+    // Abre Google Maps com a rota
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${destination[0]},${destination[1]}`;
+    window.open(url, '_blank');
+  };
+
   return (
     <div className="fixed inset-0 w-full flex flex-col bg-gray-900" style={{ height: '100dvh' }}>
       <div className="absolute w-full z-[1000] flex justify-between items-start pointer-events-none" style={{ top: 'max(16px, env(safe-area-inset-top, 16px))', left: 0, right: 0, padding: '0 16px' }}>
@@ -508,15 +515,24 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
       )}
       {accepted && (
         <div className="absolute bottom-0 w-full bg-gradient-to-t from-gray-900 via-gray-900 to-transparent p-6 z-[2000]" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom, 24px))' }}>
-            <div className="bg-green-600 rounded-2xl p-6 text-white shadow-2xl">
-                <div className="flex items-center justify-between mb-4">
+            <div className="bg-green-600 rounded-2xl p-6 text-white shadow-2xl space-y-4">
+                <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-3xl">🎓</div>
                         <div><h3 className="font-bold text-xl">Mariana Silva</h3><p className="text-green-200">Rua das Flores, 123</p></div>
                     </div>
                     <div className="text-right"><div className="text-2xl font-bold">R$ 45,00</div><div className="text-green-200 text-sm">2.5 km</div></div>
                 </div>
-                <button onClick={handleFinish} className="w-full py-4 bg-white text-green-600 rounded-xl font-bold text-lg hover:bg-green-50 transition-colors shadow-lg">✓ Finalizar Aula</button>
+                
+                <div className="flex space-x-3">
+                  <button onClick={openNavigation} className="flex-1 py-3 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors border border-white/20">
+                    <span className="material-symbols-outlined">navigation</span>
+                    Navegar (GPS)
+                  </button>
+                  <button onClick={handleFinish} className="flex-1 py-3 bg-white text-green-600 rounded-xl font-bold hover:bg-green-50 transition-colors shadow-lg">
+                    ✓ Finalizar
+                  </button>
+                </div>
             </div>
         </div>
       )}
