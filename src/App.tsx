@@ -354,6 +354,22 @@ const Footer = () => (
 const StudentView = ({ onBack }: { onBack: () => void }) => {
   const [status, setStatus] = useState<'idle' | 'searching' | 'selecting' | 'confirmed'>('idle');
   const [selected, setSelected] = useState<number | null>(null);
+  const [destination, setDestination] = useState<[number, number] | null>(null);
+
+  // Simula um destino quando confirma
+  useEffect(() => {
+    if (status === 'confirmed') {
+        // Pega localização atual e adiciona offset para simular destino
+        navigator.geolocation.getCurrentPosition(pos => {
+            setDestination([
+                pos.coords.latitude + 0.01, 
+                pos.coords.longitude + 0.01
+            ]);
+        });
+    } else {
+        setDestination(null);
+    }
+  }, [status]);
 
   const instructors = [
     { id: 1, name: 'Instrutor Carlos', vehicle: 'Gol Branco', rating: 4.9, price: 'R$ 60,00', eta: '5 min', photo: '👨‍🏫' },
@@ -363,7 +379,9 @@ const StudentView = ({ onBack }: { onBack: () => void }) => {
 
   return (
     <div className="fixed inset-0 w-full bg-gray-100" style={{ height: '100dvh' }}>
-      <div className="absolute inset-0"><Map /></div>
+      <div className="absolute inset-0">
+          <Map destination={destination} showInstructors={status !== 'confirmed'} />
+      </div>
       <button onClick={onBack} className="absolute z-[1000] p-3 bg-white rounded-full shadow-lg hover:scale-105 transition-transform" style={{ top: 'max(16px, env(safe-area-inset-top, 16px))', left: '16px' }}>
           <span className="material-symbols-outlined text-gray-800">arrow_back</span>
       </button>
@@ -407,13 +425,24 @@ const StudentView = ({ onBack }: { onBack: () => void }) => {
             </div>
         )}
         {status === 'confirmed' && (
-            <div className="text-center py-10">
+            <div className="text-center py-6">
+                <div className="flex items-center justify-between mb-6 bg-blue-50 p-4 rounded-2xl">
+                    <div className="text-left">
+                        <div className="text-xs text-gray-500 font-bold uppercase">Destino</div>
+                        <div className="font-bold text-gray-900">Rua Exemplo, 123</div>
+                    </div>
+                    <div className="text-right">
+                         <div className="text-xs text-gray-500 font-bold uppercase">Tempo</div>
+                        <div className="font-bold text-blue-600">15 min</div>
+                    </div>
+                </div>
+                
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="material-symbols-outlined text-4xl text-green-600">check_circle</span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Confirmado!</h2>
-                <p className="text-gray-500 mb-6">O instrutor está a caminho.</p>
-                <button onClick={() => { setStatus('idle'); setSelected(null); }} className="text-blue-600 font-bold">Novo pedido</button>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Instrutor a caminho!</h2>
+                <p className="text-gray-500 mb-6">Aguarde no local de embarque.</p>
+                <button onClick={() => { setStatus('idle'); setSelected(null); }} className="text-blue-600 font-bold hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors">Cancelar corrida</button>
             </div>
         )}
       </div>
@@ -425,6 +454,7 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
   const [isOnline, setIsOnline] = useState(false);
   const [incomingRequest, setIncomingRequest] = useState<any>(null);
   const [accepted, setAccepted] = useState(false);
+  const [destination, setDestination] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     let timeout: any;
@@ -436,8 +466,23 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
     return () => clearTimeout(timeout);
   }, [isOnline, incomingRequest, accepted]);
 
-  const handleAccept = () => { setAccepted(true); setIncomingRequest(null); };
-  const handleFinish = () => { setAccepted(false); setIsOnline(false); };
+  const handleAccept = () => { 
+      setAccepted(true); 
+      setIncomingRequest(null);
+      // Simula destino (aluno) próximo ao instrutor
+      navigator.geolocation.getCurrentPosition(pos => {
+          setDestination([
+              pos.coords.latitude + 0.008, 
+              pos.coords.longitude - 0.008
+          ]);
+      });
+  };
+  
+  const handleFinish = () => { 
+      setAccepted(false); 
+      setIsOnline(false); 
+      setDestination(null);
+  };
 
   return (
     <div className="fixed inset-0 w-full flex flex-col bg-gray-900" style={{ height: '100dvh' }}>
@@ -450,7 +495,9 @@ const InstructorView = ({ onBack }: { onBack: () => void }) => {
             <div className="text-2xl font-bold text-green-400">R$ 120,00</div>
         </div>
       </div>
-      <div className={`flex-1 relative transition-all duration-300 ${incomingRequest ? 'opacity-60' : 'opacity-90'}`}><Map /></div>
+      <div className={`flex-1 relative transition-all duration-300 ${incomingRequest ? 'opacity-60' : 'opacity-100'}`}>
+          <Map destination={destination} showInstructors={false} />
+      </div>
       {!incomingRequest && !accepted && (
           <div className="absolute left-0 w-full flex flex-col items-center z-[1000] space-y-4" style={{ bottom: 'max(40px, calc(env(safe-area-inset-bottom, 40px) + 20px))' }}>
             {isOnline && <span className="bg-black/80 backdrop-blur text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg">🔍 Procurando alunos...</span>}
